@@ -1,8 +1,16 @@
 ## Multi-User Game Server (Poker)
+A multi-user (game) server with UI for use without account registration. Instances (games) can be created by anyone. The created instance can be shared with others as web-URLs, so that groups can work (play) together.
+
+### Features
+* instance (game) creation
+* shared game state
+* private user state
+* chat box
+
 
 ### Requirements
-git
-node
+* git
+* node
 
 
 ### Install
