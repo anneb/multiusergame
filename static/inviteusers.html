@@ -27,6 +27,10 @@
         font-size:xx-large;
         color:red;
       }
+      .username {
+        padding-top: 5px;
+        padding-bottom: 5px;
+      }
     </style>
     <script src="./gameclient.js"></script>
     <script>
@@ -54,7 +58,7 @@
         let startButton = document.querySelector("#startbutton");
         startButton.addEventListener("click", joinGame);
         let gameUrl = document.querySelector("#gameurl");
-        gameUrl.innerHTML =
+        gameUrl.innerHTML = 'Share the following URL with other users:<p>' + 
           window.location.protocol +
           "//" +
           window.location.hostname +
@@ -65,7 +69,7 @@
               ? ":" + window.location.port : ""
           ) +
           "/inviteusers.html" +
-          window.location.search;
+          window.location.search + '<p>'
       }
       window.addEventListener("load", init);
     </script>
@@ -74,7 +78,7 @@
     <h1>Poker 0.1</h1>
     <h2>Invite users</h2>
     <div class="gameurl" id="gameurl"></div>
-    <input type="text" name="username" placeholder="username" /><br />
+    <div class="username"><input type="text" name="username" placeholder="your username" /></div>
     <div class="button" id="startbutton">Join Game</div>
     <div class="error" id="error"></div>
   </body>
