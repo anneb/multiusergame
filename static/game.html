@@ -43,14 +43,16 @@
       }
 
       async function updateGame() {
-        let state = await getGameState();
-        if (state.error) {
-          document.querySelector('#error').innerHTML = state.error;
-          return;
+        if (!document.hidden) {
+          let state = await getGameState();
+          if (state.error) {
+            document.querySelector('#error').innerHTML = state.error;
+            return;
+          }
+          let users = document.querySelector("#users");
+          users.innerHTML = "<ul>" + state.game.userNames.map(userName=>`<li>${userName}</li>`).join('\n') + "</ul>";
+          chatBox.update(state);
         }
-        let users = document.querySelector("#users");
-        users.innerHTML = "<ul>" + state.game.userNames.map(userName=>`<li>${userName}</li>`).join('\n') + "</ul>";
-        chatBox.update(state);
         window.setTimeout(updateGame, 2000);
       }
 
