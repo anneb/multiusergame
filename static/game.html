@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Poker 0.1</title>
+    <style>
+      html,
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      .hidden {
+        display: none;
+      }
+      .button {
+        background: blue;
+        color: white;
+        font-weight: bold;
+        padding: 10px;
+        border-radius: 4px;
+        text-align: center;
+        max-width: 150px;
+        cursor: pointer;
+      }
+      .error {
+        font-size:xx-large;
+        color:red;
+      }
+    </style>
+    <script src="./gameclient.js"></script>
+    <script>
+      let gameid;
+      let userid;
+      let gameClient = new GameClient();
+      
+      async function getGameState() {
+        let state = await gameClient.gameState(gameid, userid);
+        return state;
+      }
+
+      async function updateGame() {
+        let state = await getGameState();
+        if (state.error) {
+          document.querySelector('#error').innerHTML = state.error;
+          return;
+        }
+        let users = document.querySelector("#users");
+        users.innerHTML = "<ul>" + state.userNames.map(userName=>`<li>${userName}</li>`).join('\n') + "</ul>";
+        window.setTimeout(updateGame, 2000);
+      }
+
+      const urlParams = new URLSearchParams(window.location.search);
+      function init() {
+        gameid = urlParams.get("gameid");
+        userid = urlParams.get("userid");
+        updateGame();
+      }
+      window.addEventListener("load", init);
+    </script>
+  </head>
+  <body>
+    <h1>Poker 0.1</h1>
+    <h2>Game</h2>
+    <div class="users" id="users"></div>
+    <div class="error" id="error"></div>
+  </body>
+</html>
