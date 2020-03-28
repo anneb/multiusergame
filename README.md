@@ -1,5 +1,4 @@
-## Game Server (Poker)
-
+## Multi-User Game Server (Poker)
 
 ### Requirements
 git

@@ -44,6 +44,13 @@ class GameClient {
       return await this._fetch('gameusercreate', 'POST', {gameid:gameid, username:username})
   }
   async gameState(gameid, userid) {
+    this.gameid = gameid;
+    this.userid = userid;
     return await this._fetch(`gamestate/${gameid}/${userid}`, 'GET')
+  }
+  async gameSendChatMessage(message) {
+    if (this.gameid && this.userid) {
+      return await this._fetch('gamechat', 'POST', {gameid:this.gameid, userid:this.userid, message:message});
+    }
   }
 }

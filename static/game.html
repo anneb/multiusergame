@@ -29,10 +29,13 @@
       }
     </style>
     <script src="./gameclient.js"></script>
+    <script src="./gamechat.js"></script>
     <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      let gameClient = new GameClient();
       let gameid;
       let userid;
-      let gameClient = new GameClient();
+      let chatBox;
       
       async function getGameState() {
         let state = await gameClient.gameState(gameid, userid);
@@ -46,14 +49,16 @@
           return;
         }
         let users = document.querySelector("#users");
-        users.innerHTML = "<ul>" + state.userNames.map(userName=>`<li>${userName}</li>`).join('\n') + "</ul>";
+        users.innerHTML = "<ul>" + state.game.userNames.map(userName=>`<li>${userName}</li>`).join('\n') + "</ul>";
+        chatBox.update(state);
         window.setTimeout(updateGame, 2000);
       }
 
-      const urlParams = new URLSearchParams(window.location.search);
+      // page initialization, called after first full page load
       function init() {
         gameid = urlParams.get("gameid");
         userid = urlParams.get("userid");
+        chatBox = new GameChat(document.querySelector('#chatbox'), gameClient);
         updateGame();
       }
       window.addEventListener("load", init);
@@ -64,5 +69,6 @@
     <h2>Game</h2>
     <div class="users" id="users"></div>
     <div class="error" id="error"></div>
+    <div id="chatbox"></div>
   </body>
 </html>

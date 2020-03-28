@@ -34,25 +34,33 @@ app.get("/hello", (req, res) => {
 app.get("/gamecreate", (req, res) => {
   let gameid = uuid();
   gamesMap.set(gameid, {
-      createDate: new Date().toJSON(),
-      userNames: []
+      createDate: new Date(),
+      userNames: [],
+      chat: []
   });
   res.json({ gameid: gameid });
 });
 
+// helper function
+function getState(gameid, userid) {
+  let state;
+  if (gamesMap.get(gameid)) {
+    if (usersMap.get(userid)) {
+      state = {game: gamesMap.get(gameid), user: usersMap.get(userid)};
+    } else {
+      state = {error: `could not get user for ${userid}`}
+    }
+  } else {
+    state = {error: `could not get game for ${gameid}`}
+  }
+  return state;
+}
+
 app.get("/gamestate/:gameid/:userid", (req, res) => {
   const gameid = req.params.gameid;
   let userid = req.params.userid;
-  if (!gamesMap.has(gameid)) {
-    return res.json({ error: `game ${gameid} not found` });
-  }
-  if (!usersMap.has(userid)) {
-      return res.json({error: `user ${userid} not found`})
-  }
-  let game = gamesMap.get(gameid);
-  let user = usersMap.get(userid);
-
-  res.json(Object.assign(game, user)); // combine game and user in single result
+  let state = getState(gameid, userid);
+  res.json(state); 
 });
 
 // by REST convention, the http PUT method is used for updates of EXISTING data
@@ -87,6 +95,20 @@ app.post("/gameusercreate", (req, res) =>{
     } else {
         res.json({error: `Unknown or expired gameid: ${gameid}`});
     }
+});
+
+
+app.post("/gamechat", (req, res)=>{
+  let gameid = req.body.gameid;
+  let userid = req.body.userid;
+  let message = {message: req.body.message};
+  state = getState(gameid, userid);
+  if (!state.error) {
+    message.date = new Date();
+    message.user = state.user.name;
+    state.game.chat.push(message);
+  }
+  res.json(state);
 })
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
