@@ -8,12 +8,13 @@ A multi-user (game) server with UI for use without account registration. Instanc
 * chat box
 
 
-### Requirements
-* git
-* node
 
 
 ### Install
+#### Requirements
+* [git](https://git-scm.com/)
+* [node](https://nodejs.org/) (includes npm)
+
 ```
 git clone this_repository
 cd this_repository
