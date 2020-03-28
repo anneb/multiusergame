@@ -1,4 +1,5 @@
 const express = require("express");
+const morgan = require("morgan");
 const cors = require("cors");
 const path = require("path");
 const uuid = require("uuid-random");
@@ -8,6 +9,7 @@ const app = express();
 console.log(`Serving files from ${path.resolve(__dirname,'static')}`);
 app.use(express.static(path.resolve(__dirname,'static'))); // serve files in subdirectory static
 app.use(express.json()); // parse requests for json
+app.use(morgan('combined')); // add request logging
 app.use(cors()); // allow cross origin requests
 
 // define webserver port
