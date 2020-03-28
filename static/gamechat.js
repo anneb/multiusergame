@@ -14,7 +14,7 @@ class GameChat {
         this.chatElement.addEventListener('keydown', (e)=>this.keyDown(e));
     }
     update(gameState) {
-        if (gameState.game.chat) {
+        if (gameState.game && gameState.game.chat) {
             this.chatOutput.innerHTML = gameState.game.chat.map(message=>`${message.user}:${message.message}<br>`).join('\n');
         }
     }

@@ -36,6 +36,7 @@
       let gameid;
       let userid;
       let chatBox;
+      let userName
       
       async function getGameState() {
         let state = await gameClient.gameState(gameid, userid);
@@ -48,6 +49,10 @@
           if (state.error) {
             document.querySelector('#error').innerHTML = state.error;
             return;
+          }
+          if (!userName) {
+            userName = state.user.name;
+            document.querySelector('#user').innerHTML = `<b>You:</b> ${userName}`;
           }
           let users = document.querySelector("#users");
           users.innerHTML = "<ul>" + state.game.userNames.map(userName=>`<li>${userName}</li>`).join('\n') + "</ul>";
@@ -68,6 +73,7 @@
   </head>
   <body>
     <h1>Poker 0.1</h1>
+    <div id="user"></div>
     <h2>Game</h2>
     <div class="users" id="users"></div>
     <div class="error" id="error"></div>
