@@ -58,7 +58,6 @@
           users.innerHTML = "<ul>" + state.game.userNames.map(userName=>`<li>${userName}</li>`).join('\n') + "</ul>";
           chatBox.update(state);
         }
-        window.setTimeout(updateGame, 2000);
       }
 
       // page initialization, called after first full page load
@@ -67,6 +66,15 @@
         userid = urlParams.get("userid");
         chatBox = new GameChat(document.querySelector('#chatbox'), gameClient);
         updateGame();
+        document.addEventListener("visibilitychange", event => {
+          if (!document.hidden) {
+            updateGame();
+            gameClient.subscribeToUpdates(updateGame);
+          } else {
+            gameClient.unsubscribeToUpdates();
+          }
+        });
+        gameClient.subscribeToUpdates(updateGame);
       }
       window.addEventListener("load", init);
     </script>

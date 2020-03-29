@@ -26,16 +26,44 @@ class GameClient {
             }
             break;
       }
-      let response = await fetch(url, options);
-      if (response.ok) {
-          try {
-              let json = await response.json();
-              return json;
-          } catch(err) {
-              return ({error: err.message})
-          }
+      try {
+        let response = await fetch(url, options);
+        if (response.ok) {
+            try {
+                let json = await response.json();
+                return json;
+            } catch(err) {
+                return ({error: err.message})
+            }
+        }
+      } catch(err) {
+        return ({error: err.message})
       }
       return ({error: 'Network response was not ok'})
+  }
+  subscribeToUpdates(updateCallback) {
+    if (updateCallback) {
+      this.updateCallback = updateCallback;
+    }
+    if (this.gameid && this.updateCallback) {
+      this.eventSource = new EventSource(`gameeventemitter/${this.gameid}`)
+      this.eventSource.onmessage = (event) => {
+        this.updateCallback();
+        console.log('event received:' + event.data);
+      }
+      this.eventSource.onerror = (event) => {
+        this.eventSource.close();
+        this.subscribeToUpdates()
+        console.log(`error event received`)
+      }
+      this.eventSource.onopen = (event) => {
+        console.log('event source opened')
+      }
+    }
+  }
+  unsubscribeToUpdates() {
+    console.log('closing event source');
+    this.eventSource.close();
   }
   async gameCreate() {
       return await this._fetch('gamecreate', 'GET');

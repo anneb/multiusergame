@@ -94,6 +94,7 @@ app.post("/gameusercreate", (req, res) =>{
         let newUserid = uuid();
         usersMap.set(newUserid, {name: newUserName, gameid: gameid});
         res.json({userid: newUserid, name: newUserName});
+        sendEventToClients(gameid, {name: 'update', part: 'users'});
     } else {
         res.json({error: `Unknown or expired gameid: ${gameid}`});
     }
@@ -111,6 +112,35 @@ app.post("/gamechat", (req, res)=>{
     state.game.chat.push(message);
   }
   res.json(state);
+  sendEventToClients(gameid, {name: 'update', part: 'chat'});
+})
+
+let eventClients = [];
+
+function sendEventToClients(gameid, data) {
+  eventClients.forEach(c =>{if (c.gameid === gameid) {c.res.write(`data: ${JSON.stringify(data)}\n\n`)}})
+}
+
+app.get("/gameeventemitter/:gameid", (req,res)=>{
+  // Server Sent Event end point
+  const newClient = {
+    id: uuid(),
+    gameid: req.params.gameid,
+    res: res
+  };
+  const headers = {
+    'Content-Type': 'text/event-stream',
+    'Connection': 'keep-alive',
+    'Cache-Control': 'no-cache'
+  };
+  res.writeHead(200, headers);
+  res.write(`data: ${JSON.stringify({name: 'open', id: newClient.id})}\n\n`)
+
+  eventClients.push(newClient);
+  req.on('close', () => {
+    console.log(`eventsource close ${newClient.id}`)
+    eventClients = eventClients.filter(c => c.id !== newClient.id);
+  });
 })
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
