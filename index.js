@@ -34,8 +34,10 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/gamecreate", (req, res) => {
+  let gameName = req.query.name ? req.query.name : 'Untitled';
   let gameid = uuid();
   gamesMap.set(gameid, {
+      name: gameName,
       createDate: new Date(),
       userNames: [],
       chat: []

@@ -35,17 +35,16 @@
     <script src="./gameclient.js"></script>
     <script>
       let gameid;
-      async function joinGame() {
-        
+      const urlParams = new URLSearchParams(window.location.search);
+
+      async function joinGame() {  
         let username = document.querySelector('input[name="username"]').value;
         if (username.trim() === "") {
           alert("please provide a username!");
           return;
         }
         let gameClient = new GameClient();
-        const urlParams = new URLSearchParams(window.location.search);
         const gameid = urlParams.get('gameid');
-        
         let user = await gameClient.gameUserCreate(gameid,username);
         if (!user.error) {
           window.location = `game.html?gameid=${gameid}&userid=${user.userid}`
@@ -55,28 +54,17 @@
       }
 
       function init() {
+        let gameName = urlParams.get('name');
+        document.querySelector('h1').innerHTML = gameName;
         let startButton = document.querySelector("#startbutton");
         startButton.addEventListener("click", joinGame);
-        let gameUrl = document.querySelector("#gameurl");
-        gameUrl.innerHTML = 'Share the following URL with other users:<p>' + 
-          window.location.protocol +
-          "//" +
-          window.location.hostname +
-          (
-              (window.location.protocol === 'https:' && window.location.port !== 443) 
-              || 
-              (window.location.protocol === 'http:' && window.location.port !== 80) 
-              ? ":" + window.location.port : ""
-          ) +
-          "/inviteusers.html" +
-          window.location.search + '<p>'
       }
       window.addEventListener("load", init);
     </script>
   </head>
   <body>
     <h1>Poker 0.1</h1>
-    <h2>Invite users</h2>
+    <h2>Create user</h2>
     <div class="gameurl" id="gameurl"></div>
     <div class="username"><input type="text" name="username" placeholder="your username" /></div>
     <div class="button" id="startbutton">Join Game</div>

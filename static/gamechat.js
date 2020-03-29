@@ -1,4 +1,10 @@
 
+function sanitizeHtml(str) {
+    let el = document.createElement('div');
+    el.innerText = str;
+    return el.innerHTML;
+}
+
 
 class GameChat {
     constructor (chatElement, gameClient) {
@@ -15,7 +21,7 @@ class GameChat {
     }
     update(gameState) {
         if (gameState.game && gameState.game.chat) {
-            this.chatOutput.innerHTML = gameState.game.chat.map(message=>`${message.user}:${message.message}<br>`).join('\n');
+            this.chatOutput.innerHTML = gameState.game.chat.map(message=>`${sanitizeHtml(message.user)}:${sanitizeHtml(message.message)}<br>`).join('\n');
         }
     }
     async keyDown(event) {

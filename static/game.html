@@ -33,14 +33,20 @@
     <script>
       const urlParams = new URLSearchParams(window.location.search);
       let gameClient = new GameClient();
-      let gameid;
-      let userid;
+
       let chatBox;
-      let userName
+      let gameid; 
+      let userid;
+
+      function sanitizeHtml(str) {
+        let el = document.createElement('div');
+        el.innerText = str;
+        return el.innerHTML;
+      }
       
       async function getGameState() {
-        let state = await gameClient.gameState(gameid, userid);
-        return state;
+        let gameState = await gameClient.gameState(gameid, userid);
+        return gameState;
       }
 
       async function updateGame() {
@@ -50,13 +56,21 @@
             document.querySelector('#error').innerHTML = state.error;
             return;
           }
-          if (!userName) {
-            userName = state.user.name;
-            document.querySelector('#user').innerHTML = `<b>You:</b> ${userName}`;
-          }
+          document.querySelector('#gamename').innerText = state.game.name;
+          document.querySelector('#user').innerText = `${state.user.name}`;
           let users = document.querySelector("#users");
-          users.innerHTML = "<ul>" + state.game.userNames.map(userName=>`<li>${userName}</li>`).join('\n') + "</ul>";
+          users.innerHTML = "<ul>" + state.game.userNames.map(userName=>`<li>${sanitizeHtml(userName)}</li>`).join('\n') + "</ul>";
           chatBox.update(state);
+          let gameUrl = document.querySelector("#gameurl");
+          gameUrl.innerText = window.location.protocol + "//" +
+            window.location.hostname +
+            (
+                (window.location.protocol === 'https:' && window.location.port !== 443) 
+                || 
+                (window.location.protocol === 'http:' && window.location.port !== 80) 
+                ? ":" + window.location.port : ""
+            ) +
+            `/adduser.html?gameid=${encodeURIComponent(gameid)}&name=${encodeURIComponent(state.game.name)}`;
         }
       }
 
@@ -80,11 +94,16 @@
     </script>
   </head>
   <body>
-    <h1>Poker 0.1</h1>
+    <h1 id=gamename>Game</h1>
+    <h2>You</h2>
     <div id="user"></div>
-    <h2>Game</h2>
+    <h2>Users</h2>
     <div class="users" id="users"></div>
     <div class="error" id="error"></div>
+    <h2>Chat</h2>
     <div id="chatbox"></div>
+    <h2>Invite</h2>
+    share the following URL with other users to join this game:
+    <div id="gameurl"></div>
   </body>
 </html>

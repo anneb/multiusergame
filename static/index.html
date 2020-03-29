@@ -23,17 +23,30 @@
         max-width: 150px;
         cursor: pointer;
       }
+      #gamename {
+        margin-top: 5px;
+        margin-bottom: 5px;
+      }
+      #error {
+        font-size: xx-large;
+        color: red;
+      }
     </style>
     <script src="gameclient.js"></script>
     <script>
       async function gameCreate() {
+        let gameName = document.querySelector('#gamename').value;
+        if (gameName.trim() === '') {
+          document.querySelector('#error').innerHTML = 'Please provide a name for the new game';
+          return;
+        }
         let client = new GameClient('./');
-        let game = await client.gameCreate();
+        let game = await client.gameCreate(gameName);
         if (!game.error) {
             gameid = game.gameid;
             let createButton = document.querySelector("#createbutton");
             createButton.classList.add("hidden");
-            window.location = `inviteusers.html?gameid=${gameid}`;
+            window.location = `adduser.html?gameid=${gameid}&name=${encodeURIComponent(gameName)}`;
         } else {
             let error = document.querySelector('#error');
             error.innerHTML = game.error;
@@ -48,7 +61,8 @@
     </script>
   </head>
   <body>
-    <h1>Poker 0.1</h1>
+    <h1>Game 0.1</h1>
+    <div><input id="gamename" type="text" placeholder="game name"></div>
     <div class="button" id="createbutton">Create new Game</div>
     <div class="error" id="error"></div>
   </body>

@@ -10,7 +10,6 @@ class GameClient {
     }
   }
   async _fetch(path, method, params) {
-      let url  = this.baseUrl + path;
       let options = {method:method};
       switch (method) {
           case 'GET':
@@ -27,7 +26,7 @@ class GameClient {
             break;
       }
       try {
-        let response = await fetch(url, options);
+        let response = await fetch(this.baseUrl + path, options);
         if (response.ok) {
             try {
                 let json = await response.json();
@@ -65,8 +64,8 @@ class GameClient {
     console.log('closing event source');
     this.eventSource.close();
   }
-  async gameCreate() {
-      return await this._fetch('gamecreate', 'GET');
+  async gameCreate(name) {
+      return await this._fetch('gamecreate', 'GET', {name: name});
   }
   async gameUserCreate(gameid, username) {
       return await this._fetch('gameusercreate', 'POST', {gameid:gameid, username:username})
